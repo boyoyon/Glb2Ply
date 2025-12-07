@@ -2,6 +2,8 @@ import cv2, os, sys
 import trimesh
 import numpy as np
 
+skip = 100
+
 #
 # ピラミッドの頂点(5個)のindexを探す
 #
@@ -70,10 +72,65 @@ def find_pixelcoord(p, p0, p1, normal_vector, numerator, xscale, yscale):
     return intersection[0] / xscale, intersection[1] / yscale 
 
 
-def save_ply(path_ply, vertices, img, p0, p1, normal_vector, numerator, xscale, yscale, zscale):
+def extract_UVs_faces(vertices, img, p0, p1, normal_vector, numerator, xscale, yscale, zscale, skip):
 
     nrVertices0 = vertices[0].shape[0] # object
     H, W = img.shape[:2]
+
+    idxmap = np.zeros((H,W), np.int32)
+
+    UVs = []
+
+    rect = (0, 0, W, H)
+    point2d = []
+    subdiv = cv2.Subdiv2D(rect)
+
+    for i in range(0, nrVertices0, skip):
+
+        x = vertices[0][i][0]
+        y = vertices[0][i][1]
+        z = vertices[0][i][2]
+
+        p = np.array((x,y,z))
+
+        px, py = find_pixelcoord(p, p0, p1, normal_vector, numerator, xscale, yscale)
+
+        UVs.append((x,y,z * zscale, px, py))
+
+        X = int(px * (W-1))
+        Y = int(py * (H-1))
+
+        subdiv.insert((X, Y))
+        point2d.append((X, Y))
+
+    triangles = subdiv.getTriangleList()
+
+    faces = []
+
+    for triangle in triangles:
+        found = 0
+        idx1 = -1
+        idx2 = -1
+        idx3 = -1
+
+        for i in range(len(point2d)):
+            if triangle[0] == point2d[i][0] and triangle[1] == point2d[i][1]:
+                idx1 = i                    
+                found += 1
+            if triangle[2] == point2d[i][0] and triangle[3] == point2d[i][1]:
+                idx2 = i                    
+                found += 1
+            if triangle[4] == point2d[i][0] and triangle[5] == point2d[i][1]:
+                idx3 = i                    
+                found += 1        
+
+            if found == 3:
+                faces.append((idx1, idx2, idx3))
+                break
+
+    return UVs, faces
+
+def save_ply(path_ply, UVs, faces):
 
     with open(path_ply, mode='w') as f:
 
@@ -83,7 +140,7 @@ def save_ply(path_ply, vertices, img, p0, p1, normal_vector, numerator, xscale, 
         line = 'format ascii 1.0\n'
         f.write(line)
 
-        line = 'element vertex %d\n' % nrVertices0
+        line = 'element vertex %d\n' % len(UVs)
         f.write(line)
 
         line = 'property float x\n'
@@ -95,47 +152,42 @@ def save_ply(path_ply, vertices, img, p0, p1, normal_vector, numerator, xscale, 
         line = 'property float z\n'
         f.write(line)
 
-        line = 'property uchar red\n'
+        line = 'property float s\n'
         f.write(line)
 
-        line = 'property uchar green\n'
+        line = 'property float t\n'
         f.write(line)
 
-        line = 'property uchar blue\n'
+        line = 'element face %d\n' % len(faces)
+        f.write(line)
+
+        line = 'property list uchar int vertex_indices\n'
         f.write(line)
 
         line = 'end_header\n'
         f.write(line)
 
-        for i in range(nrVertices0):
+        for uv in UVs:
 
-            x = vertices[0][i][0]
-            y = vertices[0][i][1]
-            z = vertices[0][i][2]
+            line = '%f %f %f %f %f\n' % (uv[0], uv[1], uv[2], uv[3], uv[4])
+            f.write(line)
 
-            p = np.array((x,y,z))
+        for face in faces:
 
-            px, py = find_pixelcoord(p, p0, p1, normal_vector, numerator, xscale, yscale)
-
-            X = int(px * (W-1))
-            Y = int(py * (H-1))
-
-            b = img[Y][X][0]
-            g = img[Y][X][1]
-            r = img[Y][X][2]
-
-            line = '%f %f %f %d %d %d\n' % (x, y, z * zscale, r, g, b)
+            line = '3 %d %d %d\n' % (face[0], face[1], face[2])
             f.write(line)
 
     f.close()          
 
 def main():
 
+    global skip
+
     argv = sys.argv
     argc = len(argv)
     
     print('%s converts glb to ply' % argv[0])
-    print('[usage] python %s <image> <glb> [<zSacle>]' % argv[0])
+    print('[usage] python %s <image> <glb> [<zSacle> <skip>]' % argv[0])
     
     if argc < 3:
         quit()
@@ -149,6 +201,9 @@ def main():
 
     if argc > 3:
         zscale = float(argv[3])
+
+    if argc > 4:
+        skip = int(argv[4])
     
     scene = trimesh.load(argv[2])
     
@@ -164,11 +219,16 @@ def main():
     
     p0, p1, normal_vector, numerator, xscale, yscale = find_indices_of_square_pyramid_vertices(camera)
     
+    UVs, faces = extract_UVs_faces(vertices, img, p0, p1, normal_vector, numerator, xscale, yscale, zscale, skip)
+
+    print('UVs:', len(UVs))
+    print('faces:',len(faces))
+
     base = os.path.basename(argv[1])
     filename = os.path.splitext(base)[0]
-    dst_path = '%s_glb2ply.ply' % filename
+    dst_path = '%s_glb2ply_denseUV.ply' % filename
     
-    save_ply(dst_path, vertices, img, p0, p1, normal_vector, numerator, xscale, yscale, zscale)
+    save_ply(dst_path, UVs, faces)
     print('save %s' % dst_path)
 
 if __name__ == '__main__':
