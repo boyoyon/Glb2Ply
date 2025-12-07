@@ -20,10 +20,10 @@
         <h2>使い方</h2>
         <p>
            ● GLBファイルにRGB情報を付加してPLYファイルとして書き出す。<br>
-　　           python glb2ply.py  (RGB画像ファイル)  (glbファイル)  [(zスケール)]<br>
+            python glb2ply.py  (RGB画像ファイル)  (glbファイル)  [(zスケール)]<br>
 <br>
-           ● PLYファイルの確認方法<br>       
-               python o3d_display_ply.py (plyファイル)<br>
+           ● PLYファイルの確認方法<br>
+            python o3d_display_ply.py (plyファイル)<br>
 
 　　　　　　 <table border="1">
                 <tr><th>操作</th><th>機能</th></tr>
@@ -36,6 +36,19 @@
 <br>
             ● 点群PLYのメッシュ化<br>
             　python o3d_pcd_to_mesh.py (plyファイル)<br>
+             <br>
+            ● GLBファイルにテクスチャー座標を付加してPLYファイルとして書き出す。<br>
+            　python glb2ply_denseUV.py (RGB画像ファイル) (glbファイル)　[(zスケール)　(スキップ)]<br>
+            　点群をドロネー分割してメッシュ化(点が多いので間引く)、テクスチャー座標付加<br>
+             <br>
+            ● テクスチャー座標付きplyの表示<br>
+            (環境構築) pip install PyOpenGL glfw plyfile<br>
+            (実行)　python RgbPly.py (RGB画像ファイル)　(テクスチャー座標付きplyファイル)<br>
+<br>
+            ・スキップに100を指定した場合<br>
+            <img src="images/skip100.gif"><br>
+            ・スキップに1000を指定した場合<br>
+            <img src="images/skip1000.gif"><br>
         </p>
         <h2>備忘録</h2>
         <p>
