@@ -62,7 +62,12 @@
          <img src="images/glb2ply2.svg"><br>
          ・上図の配置を想定。<br>
          ・z 座標が一番大きい点を p<sub>0</sub> としてオブジェクトの各点と p<sub>0</sub> を結ぶ直線と
-面 p<sub>1</sub>p<sub>2</sub>p<sub>4</sub>p<sub>3</sub> の交点の座標のRGB画像の色を点群に付加した。
-        </p>
+面 p<sub>1</sub>p<sub>2</sub>p<sub>4</sub>p<sub>3</sub> の交点の座標のRGB画像の色を点群に付加した。<br>
+<br>
+         ・MVS(多視点ステレオ)の場合は複数のカメラが異なる方向を向くので, p<sub>0</sub> と ワールド座標の z 軸方向が一致しなくなる。<br>
+         　→ まじめに p<sub>0</sub> を抽出をしないといけない。(同一平面にある p<sub>1</sub>p<sub>2</sub>p<sub>3</sub>p<sub>4</sub> と p<sub>0</sub> を判別する)<br>
+         <br>
+         <img src="images/mvs.svg"><br>
+</p>
     </body>
 </html>
