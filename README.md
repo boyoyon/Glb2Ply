@@ -65,9 +65,11 @@
 面 p<sub>1</sub>p<sub>2</sub>p<sub>4</sub>p<sub>3</sub> の交点の座標のRGB画像の色を点群に付加した。<br>
 <br>
          ・MVS(多視点ステレオ)の場合は複数のカメラが異なる方向を向くので, p<sub>0</sub> と ワールド座標の z 軸方向が一致しなくなる。<br>
-         　→ まじめに p<sub>0</sub> を抽出をしないといけない。(同一平面にある p<sub>1</sub>p<sub>2</sub>p<sub>3</sub>p<sub>4</sub> と p<sub>0</sub> を判別する)<br>
+         python src\glb2ply_noRGB.py data\mvs.glb<br>
          <br>
          <img src="images/mvs.svg"><br>
+       　まじめに p<sub>0</sub> を抽出をしないといけない。(同一平面にある p<sub>1</sub>p<sub>2</sub>p<sub>3</sub>p<sub>4</sub> と p<sub>0</sub> を判別する)<br>
+         (例) src/find_outlier_point.py
 </p>
     </body>
 </html>
