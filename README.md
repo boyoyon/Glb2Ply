@@ -71,5 +71,48 @@
        　まじめに p<sub>0</sub> を抽出をしないといけない。(同一平面にある p<sub>1</sub>p<sub>2</sub>p<sub>3</sub>p<sub>4</sub> と p<sub>0</sub> を判別する)<br>
          (例) src/find_outlier_point.py
 </p>
+<h2>Click3R (作成中)</h2>
+<p>
+人のアシスト(対応点を数点クリックする)ありのMVS(Multi-View Stereo)の模様<br>
+これも on-line デモは glbだった<br>
+(paper) <a href="https://arxiv.org/abs/2611.12875">https://arxiv.org/abs/2611.12875</a><br>
+(github) <a href="https://github.com/UVA-Computer-Vision-Lab/click3r">https://github.com/UVA-Computer-Vision-Lab/click3r</a><br>
+(on-line demo) <a href="https://huggingface.co/spaces/uva-cv-lab/Click3R">https://huggingface.co/spaces/uva-cv-lab/Click3R</a>
+</p>
+<img src="images/click3r_on_line_demo.svg">
+<p>
+(コードイメージ)<br>
+import trimesh<br>
+import numpy as np<br>
+import open3d as o3d<br>
+<br>
+scene = trimesh.load('ダウンロードしたglbファイル')<br>
+for geometry_name, geometry in scene.geometry.items():<br>
+　　print(geometry_name)<br>
+　　if isinstance(geometry, trimesh.Trimesh):<br>
+　　　　print(f'{geometry_name} はTrimeshです')<br>
+　　　　mesh = o3d.geometry.TriangleMesh()<br>
+　　　　mesh.vertices = o3d.utility.Vector3dVector(np.asarray(geometry.vertices))<br>
+　　　　mesh.triangles = o3d.utility.Vector3iVector(np.asarray(geometry.faces))<br>
+　　　　dst_path = '%s.ply' % geometry_name<br>
+　　　　o3d.io.write_triangle_mesh(dst_path, mesh)<br>
+　　　　print('save %s' % dst_path)<br>
+    <br>
+　　elif isinstance(geometry, trimesh.PointCloud):<br>
+　　　　print(f'{geometry_name} は Point Cloudです')<br>
+　　　　pcd = o3d.geometry.PointCloud()<br>
+　　　　pcd.points = o3d.utility.Vector3dVector(geometry.vertices)<br>
+　　　　dst_path = '%s.ply' % geometry_name<br>
+　　　　o3d.io.write_point_cloud(dst_path, pcd)<br>
+　　　　print('save %s' % dst_path)<br>
+<br>
+geometry_0: 点群<br>
+geometry_1~13: メッシュ<br>
+・geometry_1：カメラ１の投影面？<br>
+・geometry_2：カメラ１の視覚錐体？<br>
+・geometry_3：カメラ２の投影面？<br>
+・geometry_4：カメラ２の視覚錐体？<br>
+    ：
+</p>
     </body>
 </html>
