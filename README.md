@@ -109,9 +109,9 @@ for geometry_name, geometry in scene.geometry.items():<br>
 geometry_0: 点群<br>
 geometry_1~13: メッシュ<br>
 ・geometry_1：カメラ１の投影面？<br>
-・geometry_2：カメラ１の視覚錐体？<br>
+・geometry_2：カメラ１の視錐体？<br>
 ・geometry_3：カメラ２の投影面？<br>
-・geometry_4：カメラ２の視覚錐体？<br>
+・geometry_4：カメラ２の視錐体？<br>
     ：
 </p>
     </body>
