@@ -4,17 +4,20 @@
     </head>
     <body>
         <h1><center>Glb2Ply</center></h1>
+        いまさら････<br>
+        　trimesh の vertext 毎に visual.vertex_colors で RGBA が格納されていた････ <br>
+        　orz 仕様書を読んでおけば･･･<br>
+        　python　src\simple_glb2ply.py　(glbファイル)<br>
+        　とするだけでよかった。
+        <br><br>
+        以下は不要
+        <br><br>
         <h2>なにものか？</h2>
         <p>
           ・Depth Anything v3 の WEBデモなど, RGB画像から奥行き推定や3D化をした結果は glbでしかダウンロードできない。<br>
           ・glb の点群に RGB情報が見当たらなかったため, 点群に元のRGB画像の色情報を付加してみた。<br>
           　(多分探せば良いツールがいくらでもありそうだけど･･･)<br>
           ・glb/glTF の仕様書を確認していない適当な実装。<br>
-            <br>
-        　いまさら････<br>
-            　trimesh の vertext 毎に visual.vertex_colors で RGBA が格納されていた････ <br>
-            　orz 仕様書を読んでおけば･･･<br>
-         　python　src\simple_glb2ply.py　(glbファイル)<br>
             <br>
             <img src="images/glb2ply.svg">
         </p>
