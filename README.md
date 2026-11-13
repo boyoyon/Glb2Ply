@@ -71,48 +71,114 @@
        　まじめに p<sub>0</sub> を抽出をしないといけない。(同一平面にある p<sub>1</sub>p<sub>2</sub>p<sub>3</sub>p<sub>4</sub> と p<sub>0</sub> を判別する)<br>
          (例) src/find_outlier_point.py
 </p>
-<h2>Click3R (作成中)</h2>
+<h2>Click3R (やりたかった事はできたみたいだけど、いまいち･･･)</h2>
 <p>
-人のアシスト(対応点を数点クリックする)ありのMVS(Multi-View Stereo)の模様<br>
-これも on-line デモは glbだった<br>
+人のアシスト(対応点を数点クリックする)ありのMVS(Multi-View Stereo)の模様
+</p>
+
+<p>
 (paper) <a href="https://arxiv.org/abs/2611.12875">https://arxiv.org/abs/2611.12875</a><br>
 (github) <a href="https://github.com/UVA-Computer-Vision-Lab/click3r">https://github.com/UVA-Computer-Vision-Lab/click3r</a><br>
 (on-line demo) <a href="https://huggingface.co/spaces/uva-cv-lab/Click3R">https://huggingface.co/spaces/uva-cv-lab/Click3R</a>
 </p>
-<img src="images/click3r_on_line_demo.svg">
-<p>
-(コードイメージ)<br>
-import trimesh<br>
-import numpy as np<br>
-import open3d as o3d<br>
-<br>
-scene = trimesh.load('ダウンロードしたglbファイル')<br>
-for geometry_name, geometry in scene.geometry.items():<br>
-　　print(geometry_name)<br>
-　　if isinstance(geometry, trimesh.Trimesh):<br>
-　　　　print(f'{geometry_name} はTrimeshです')<br>
-　　　　mesh = o3d.geometry.TriangleMesh()<br>
-　　　　mesh.vertices = o3d.utility.Vector3dVector(np.asarray(geometry.vertices))<br>
-　　　　mesh.triangles = o3d.utility.Vector3iVector(np.asarray(geometry.faces))<br>
-　　　　dst_path = '%s.ply' % geometry_name<br>
-　　　　o3d.io.write_triangle_mesh(dst_path, mesh)<br>
-　　　　print('save %s' % dst_path)<br>
-    <br>
-　　elif isinstance(geometry, trimesh.PointCloud):<br>
-　　　　print(f'{geometry_name} は Point Cloudです')<br>
-　　　　pcd = o3d.geometry.PointCloud()<br>
-　　　　pcd.points = o3d.utility.Vector3dVector(geometry.vertices)<br>
-　　　　dst_path = '%s.ply' % geometry_name<br>
-　　　　o3d.io.write_point_cloud(dst_path, pcd)<br>
-　　　　print('save %s' % dst_path)<br>
-<br>
-geometry_0: 点群<br>
-geometry_1~13: メッシュ<br>
-・geometry_1：カメラ１の投影面？<br>
-・geometry_2：カメラ１の視錐体？<br>
-・geometry_3：カメラ２の投影面？<br>
-・geometry_4：カメラ２の視錐体？<br>
-    ：
+
 </p>
+<img src="images/click3r_on_line_demo.svg">
+
+<p>
+on-line demo の出力も glb だった<br>
+またまた、仕様を確認せず、データからテキトーに点群 PLY を作成してみる。
+</p>
+
+<p>
+[1] Click3R の on-line demo で出来た glb をPLYに変換する<br>
+　・python　click3r\src\click3rglb2ply.py　 (on-line demoでできたglbファイル)
+<br><br>
+　　geometry_*.ply ができる。<br>
+<br>
+　　geometry_0: 点群<br>
+　　geometry_1~13: メッシュ<br>
+　　・geometry_1：カメラ１の投影面？vertices:4x3, faces:4x3<br>
+　　・geometry_2：カメラ１の視錐体？vertices:14x3, faces:48x3<br>
+　　・geometry_3：カメラ２の投影面？vertices:4x3, faces:4x3<br>
+　　・geometry_4：カメラ２の視錐体？vertices:14x3, faces:48x3<br>
+　　・geometry_5～：？？？
+</p>
+
+<p>
+[2] できたPLY を全部表示してみる<br>
+　・python　click3r\src\o3d_display_plys.py　geometry*.ply<br>
+</p>
+<img src="click3r/images/point_cloud_and_meshes.svg">
+<p>
+　位置関係がわかるように座標軸も表示する<br>
+　・python　src_  click3r\src\o3d_display_ply2.py<br>
+　　geometry_0.ply　geometry_1.ply　geometry_2.ply<br>
+　　geometry_3.ply　geometry_4.ply　click3r\data\axisXYZ.ply<br>
+<br>
+　※ 色情報の無い点群はOpen3D Visualizerが色を付ける<br>
+　　　1押下：z値(デフォルト)、2押下：x値、3押下：y値、･･･ 
+</p>
+
+<img src="click3r/images/point_cloud_cameras.png">
+
+<p>
+　投影面：geometry_1,　geometry_3<br>
+<br>
+　　vertices:　頂点の4点<br>
+　　faces： 三角形分割した2枚×(裏表：2)＝4枚
+</p>
+
+<img src="click3r/images/frame.svg">
+
+<p>
+　視錐体：geometry_2,　geometry_4<br>
+<br>
+　　vertices:　ピラミッドの頂点(5点)＋表示用に太らせるための点(9点)と憶測･･･<br>
+　　最初の5点の内、同一平面内にない点をカメラ中心と想定<br>
+</p>
+
+<img src="click3r/images/pyramid.svg">
+
+<p>
+　・投影面の頂点は geometry_1,　geometry_3 から取得<br>
+　・カメラ中心は geometry_2,　geometry_4 から取得<br>
+　・点群内の点と、カメラ中心を結ぶ直線が投影面と交わる点を求め<br>
+　　その座標のマスクが閾値以上なら、画像の色を点群内の点に割り当てる<br>
+　　処理を複数のカメラで実施する<br>
+</p>
+
+<img src="click3r/images/get_color.svg">
+
+<p>
+　[3] GLB→PLY<br>
+<br>
+　引数が多いので、config ファイルを指定することにした。<br>
+　python　click3r\src\glb2ply.py　(configファイル)<br>
+<br>
+　～configファイル～<br>
+<br>
+　　[PLYS]<br>
+　　point_cloud:　(geometry_0 を格納したPLYファイル)<br>
+<br>
+　　frame1:　(geometry_1 を格納したPLYファイル)<br>
+　　pyramid1:　(geometry_2 を格納したPLYファイル)<br>
+<br>
+　　frame2:　(geometry_3 を格納したPLYファイル)<br>
+　　pyramid2:　(geometry_4 を格納したPLYファイル)<br>
+<br>
+　　[IMAGES]<br>
+　　image1:　(画像1)<br>
+　　image1_mask:　(画像1のマスク)<br>
+<br>
+　　image2: 　(画像2)<br>
+　　image2_mask:　(画像2のマスク)<br>
+<br>
+　～変換したPLYの表示例～<br>
+　　　いまいち･･･
+</p>
+
+<img src="click3r/images/result.gif">
+
     </body>
 </html>
