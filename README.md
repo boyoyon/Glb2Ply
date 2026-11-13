@@ -97,7 +97,7 @@ on-line demo の出力も glb だった<br>
 　　geometry_*.ply ができる。<br>
 <br>
 　　geometry_0: 点群<br>
-　　geometry_1~13: メッシュ<br>
+　　geometry_1~: メッシュ<br>
 　　・geometry_1：カメラ１の投影面？vertices:4x3, faces:4x3<br>
 　　・geometry_2：カメラ１の視錐体？vertices:14x3, faces:48x3<br>
 　　・geometry_3：カメラ２の投影面？vertices:4x3, faces:4x3<br>
