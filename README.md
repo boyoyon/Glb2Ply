@@ -12,7 +12,9 @@
           ・glb/glTF の仕様書を確認していない適当な実装。<br>
             <br>
         　いまさら････<br>
-　　　　　　　trimesh の vertext 毎に vertex_colors で RGBA が格納されていた････ orz 仕様書を読んでおけば･･･<br><br>
+　　　　　　trimesh の vertext 毎に vertex_colors で RGBA が格納されていた････ orz 仕様書を読んでおけば･･･<br>
+         　python　src\simple_glb2ply.py　(glbファイル)<br>
+            <br>
             <img src="images/glb2ply.svg">
         </p>
         <h2>環境構築方法</h2>
