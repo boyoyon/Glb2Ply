@@ -180,5 +180,5 @@ on-line demo の出力も glb だった<br>
 
 <img src="click3r/images/result.gif">
 
-    </body>
+</body>
 </html>
