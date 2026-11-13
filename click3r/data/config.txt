@@ -1,0 +1,17 @@
+[PLYS]
+
+point_cloud: geometry_0.ply
+
+frame1: geometry_1.ply
+pyramid1: geometry_2.ply
+
+frame2: geometry_3.ply
+pyramid2: geometry_4.ply
+
+[IMAGES]
+
+image1: 01.png
+image1_mask: 01_mask.png
+
+image2: 02.png
+image2_mask: 02_mask.png
